@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* RÉCITS: from voices to a story, and nobody rewrites what was said.
+/* GRÉGOIRE, THE ARCHIVIST -- from voices to a story, and nobody rewrites what was said.
  *   recits transcribe AUDIO... [--out transcripts]      step 1 (speech-to-text)
  *   recits extract TRANSCRIPT.json... [--out items]     step 2 (an AI lists the items)
  *   recits check ITEMS.json... --transcripts DIR [--out kept]   step 3 (exact words, or refused)
