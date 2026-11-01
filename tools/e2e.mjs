@@ -3,7 +3,8 @@
 // recording is made a voice message (.opus) and a video's sound (.m4a); then the real chain runs:
 // transcribe (OVH) → extract (OVH model, with the mission) → check. Passes when every family fact is kept
 // with its exact words, and the work fact is set aside, not lost.
-//   RECITS_API_KEY=... RECITS_FFMPEG=... node tools/e2e.mjs <work dir>
+//   RECITS_API_KEY=... RECITS_FFMPEG=... RECITS_SHERPA=<a folder whose node_modules has sherpa-onnx-node>
+//   RECITS_VOICES=<a folder of Piper voices vits-piper-fr_FR-tom-medium/, -siwis-medium/> node tools/e2e.mjs <work dir>
 import { createRequire } from 'node:module';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -13,8 +14,8 @@ import { checkItems, norm } from '../src/check.mjs';
 import { wavOf } from '../src/media.mjs';
 
 const dir = process.argv[2]; mkdirSync(dir, { recursive: true });
-const sherpa = createRequire('/home/ubuntu/build/clv-box/')('sherpa-onnx-node');
-const voice = (v) => { const d = `/home/ubuntu/build/voices/vits-piper-fr_FR-${v}`; return new sherpa.OfflineTts({ model: { vits: { model: `${d}/fr_FR-${v}.onnx`, tokens: `${d}/tokens.txt`, dataDir: `${d}/espeak-ng-data` }, numThreads: 1 }, maxNumSentences: 1 }); };
+const sherpa = createRequire(`${process.env.RECITS_SHERPA ?? process.cwd()}/`)('sherpa-onnx-node');
+const voice = (v) => { const d = `${process.env.RECITS_VOICES ?? 'voices'}/vits-piper-fr_FR-${v}`; return new sherpa.OfflineTts({ model: { vits: { model: `${d}/fr_FR-${v}.onnx`, tokens: `${d}/tokens.txt`, dataDir: `${d}/espeak-ng-data` }, numThreads: 1 }, maxNumSentences: 1 }); };
 const A = voice('tom-medium'); const B = voice('siwis-medium');
 const SCRIPT = [
     [B, 'Raconte-moi ton enfance à la ferme.'],
