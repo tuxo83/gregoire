@@ -9,8 +9,9 @@ export const norm = (t) => String(t ?? '').toLowerCase().normalize('NFC').replac
 const FIELDS = ['id', 'who', 'what', 'words', 'source'];
 const NEAR_S = 30; /* its time may be off by this much */
 
+/* Faithful items outside the mission are SET ASIDE, with why: never lost, kept on request (keepAside). */
 export function checkItems(items, transcripts) {
-    const kept = []; const refused = [];
+    const kept = []; const refused = []; const aside = [];
     const by = new Map(transcripts.map((t) => [t.source, t]));
     const seen = new Set();
     for (const item of items) {
@@ -27,7 +28,18 @@ export function checkItems(items, transcripts) {
         const found = norm(near.map((s) => s.text).join(' ')).includes(words) ? 'near' : norm(t.segments.map((s) => s.text).join(' ')).includes(words) ? 'elsewhere' : null;
         if (!found) { refused.push({ item, why: 'these exact words are not in the transcript' }); continue; }
         if (found === 'elsewhere') { refused.push({ item, why: `these words are in the transcript, but not near ${item.source.start} s` }); continue; }
-        seen.add(item.id); kept.push(item);
+        seen.add(item.id);
+        if (item.outside) aside.push(item); else kept.push(item);
     }
-    return { kept, refused };
+    return { kept, refused, aside };
+}
+
+/* « Garde-le quand même » : an item set aside is kept, marked as kept on request, its reason noted. */
+export function keepAside(kept, aside, id, at = new Date().toISOString()) {
+    const i = aside.findIndex((x) => x.id === id);
+    if (i < 0) throw new Error(`no item ${id} set aside`);
+    const [item] = aside.splice(i, 1);
+    const { outside, ...rest } = item;
+    kept.push({ ...rest, keptOnRequest: { at, setAsideBecause: outside } });
+    return { kept, aside };
 }
