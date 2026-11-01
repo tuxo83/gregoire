@@ -1,6 +1,6 @@
 {
   "name": "recits",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "From voices to a story, and nobody rewrites what was said: transcribe, list what was said with its exact words, check each word, then tell.",
   "type": "module",
   "bin": { "recits": "bin/recits.mjs" },

@@ -10,7 +10,10 @@ work of the assistant the family talks to.
 - **Checks each item word for word** against the transcript: not found, not kept -- nobody, no AI,
   can rewrite what was said.
 - Works within a **mission** written in plain words ("keep the memories of Dad's life, and of
-  Mum's"); what falls outside it is set aside, never lost, and kept on request.
+  Mum's"); what falls outside it is set aside, never lost, and kept on request (`recits keep ID`).
+- Reads **any recording**: voice messages (WhatsApp .opus, iPhone .m4a), dictaphones (.mp3, .wav),
+  videos (.mp4, .mov, .mkv, .webm) -- through ffmpeg (`RECITS_FFMPEG`); **any length**, in parts of five
+  minutes cut in a pause; **tells voices apart** ("voix 1", "voix 2") where the service can.
 
 ## Why "Grégoire"
 
@@ -34,7 +37,12 @@ Speech-to-text and the model: any OpenAI-compatible service (OVH AI Endpoints by
 ## Tests
 
 ```sh
-npm test
+npm test                                              # no network
+RECITS_API_KEY=... RECITS_FFMPEG=... node tools/e2e.mjs /tmp/e2e   # a school case, end to end
 ```
+
+The school case is checked by construction: two synthetic voices tell memories whose facts are known in
+advance -- family ones and a work one -- as a voice message and a video's sound; every family fact must be
+kept with its exact words, and the work one set aside. Nobody has to listen to anything.
 
 MIT licence.
